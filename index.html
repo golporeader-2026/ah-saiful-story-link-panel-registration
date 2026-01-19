@@ -30,8 +30,6 @@
                 <input type="email" id="email" placeholder="Enter Your Email" required>
                 <label for="fblink">Facebook ID link</label>
                 <input type="text" id="fblink" placeholder="Enter Your Facebook ID Link" required>
-                <label for="s-date">Form Submit Date</label>
-                <input type="date" id="s-date" placeholder="" required>
                 <label for="phone">Phone</label>                
                 <div class="form-row">
                     <select name="" id="p-code">
@@ -39,6 +37,8 @@
                     </select>
                     <input type="text" id="phone">
                 </div>
+                <label for="subDate">Form Submit Date</label>
+                <input type="date" id="s-date" placeholder="" required>
                 <br>                       
                 <br>
                 <div class="button">
@@ -56,13 +56,7 @@
     document.querySelector("form").addEventListener("submit", function(e){
         e.preventDefault();
 
-        // Dhaka time বের করা
-        const now = new Date();
-        const optionsDate = { timeZone: "Asia/Dhaka", year: "numeric", month: "2-digit", day: "2-digit" };
-        const optionsTime = { timeZone: "Asia/Dhaka", hour: "2-digit", minute: "2-digit", second: "2-digit" };
-
-        const subDate = new Intl.DateTimeFormat("en-GB", optionsDate).format(now); // DD/MM/YYYY
-        const subTime = new Intl.DateTimeFormat("en-GB", optionsTime).format(now); // HH:MM:SS
+        
 
         fetch("https://script.google.com/macros/s/AKfycbz9SfFymvUkip77KsBFjt_sxoxbimDlCoejSksDARRIqDaIWYwL4_Mk6_32rkOcI78U/exec", {
             method: "POST",
@@ -73,8 +67,7 @@
                 email: document.getElementById("email").value,
                 fblink: document.getElementById("fblink").value,
                 phone: document.getElementById("phone").value,
-                subDate: subDate,
-                subTime: subTime
+                email: document.getElementById("subDate").value
             })
         })
         .then(res => res.text())
