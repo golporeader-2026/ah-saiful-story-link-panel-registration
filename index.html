@@ -37,8 +37,8 @@
                     </select>
                     <input type="text" id="phone">
                 </div>
-                <label for="subDate">Form Submit Date</label>
-                <input type="date" id="s-date" placeholder="" required>
+                <!-- <label for="subDate">Form Submit Date</label>
+                <input type="date" id="subDate" placeholder="" required> -->
                 <br>                       
                 <br>
                 <div class="button">
@@ -51,33 +51,81 @@
                 </div>                      
             </form>                
         </div>               
-    </div>      
-    <script>       
-    document.querySelector("form").addEventListener("submit", function(e){
-        e.preventDefault();
+    </div>
+    <script>
+        document.querySelector("form").addEventListener("submit", function(e){
+            e.preventDefault();
 
-        
+            const submitBtn = document.querySelector(".color-green");
+            submitBtn.disabled = true;                 // বাটন নিষ্ক্রিয় করা
+            submitBtn.value = "Submitting... ⏳";      // টেক্সট পরিবর্তন
 
-        fetch("https://script.google.com/macros/s/AKfycbz9SfFymvUkip77KsBFjt_sxoxbimDlCoejSksDARRIqDaIWYwL4_Mk6_32rkOcI78U/exec", {
-            method: "POST",
-            body: JSON.stringify({
+            // Dhaka টাইম অনুযায়ী সাবমিট তারিখ বের করা
+            const now = new Date();
+            const optionsDate = { timeZone: "Asia/Dhaka", year: "numeric", month: "2-digit", day: "2-digit" };
+            const subDate = new Intl.DateTimeFormat("en-GB", optionsDate).format(now);
+
+            // ফর্মের ইনপুট ভ্যালু সংগ্রহ
+            const formData = {
                 nameEn: document.getElementById("name-en").value,
                 nameBn: document.getElementById("name-bn").value,
                 dob: document.getElementById("dob").value,
                 email: document.getElementById("email").value,
                 fblink: document.getElementById("fblink").value,
                 phone: document.getElementById("phone").value,
-                email: document.getElementById("subDate").value
-            })
-        })
-        .then(res => res.text())
-        .then(data => {
-            window.location.href = "successful.html"; 
-        })
-        .catch(err => {
-            alert("Something went wrong: " + err);
-        });       
-    });
-</script>
+                subDate: subDate
+            };
+
+            // প্রথমে শিটের ডাটা নিয়ে আসা
+            fetch("https://script.google.com/macros/s/AKfycbz7pBK48OeLtIlUSP7BTYkHqtgtr58PtpIRzz6TtQygLJtF57egW4GKfxhzSTRu3nFm/exec")
+                .then(res => res.json())
+                .then(data => {
+                    let duplicate = false;
+                    let conflictField = "";
+
+                    data.forEach(row => {
+                        const [nameEn, nameBn, dob, email, fblink, phone, subDate] = row;
+
+                        if (formData.email === email) {
+                            duplicate = true;
+                            conflictField = "Email";
+                        }
+                        if (formData.phone === phone) {
+                            duplicate = true;
+                            conflictField = "Phone";
+                        }
+                        if (formData.fblink === fblink) {
+                            duplicate = true;
+                            conflictField = "Facebook Link";
+                        }
+                    });
+
+                    if (duplicate) {
+                        alert(conflictField + " আগে থেকেই আছে, অনুগ্রহ করে অন্য তথ্য দিন।");
+                        submitBtn.disabled = false;        // আবার সক্রিয় করা
+                        submitBtn.value = "Submit";        // টেক্সট আগের মতো করা
+                    } else {
+                        fetch("https://script.google.com/macros/s/AKfycbz7pBK48OeLtIlUSP7BTYkHqtgtr58PtpIRzz6TtQygLJtF57egW4GKfxhzSTRu3nFm/exec", {
+                            method: "POST",
+                            body: JSON.stringify(formData)
+                        })
+                        .then(res => res.text())
+                        .then(data => {
+                            window.location.href = "successful.html"; 
+                        })
+                        .catch(err => {
+                            alert("Something went wrong: " + err);
+                            submitBtn.disabled = false;
+                            submitBtn.value = "Submit";
+                        });
+                    }
+                })
+                .catch(err => {
+                    alert("Error checking duplicates: " + err);
+                    submitBtn.disabled = false;
+                    submitBtn.value = "Submit";
+                });
+        });
+    </script>
 </body>
 </html>
