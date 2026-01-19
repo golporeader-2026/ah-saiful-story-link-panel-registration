@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beta Program | Form</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="form-container">        
+        <div class="container">
+            <form action="">
+                <div class="logo">
+                    <img src="assests/logo.png" alt="logo">
+                </div>
+                <h1>AH Saiful Story Link</h1>
+                <h2>Admin & Moderator Info</h2>
+                <br>
+                <br>
+                <h3>Please fill the form</h3>
+                <br>
+                <br>
+                <label for="name-en">Name (English)</label>
+                <input type="text" id="name-en" placeholder="Enter Your Name in English" required>                
+                <label for="name-bn">Name (Bangla)</label>
+                <input type="text" id="name-bn" placeholder="আপনার নাম বাংলায় লিখুন" required>
+                <label for="dob">Date of Birth</label>
+                <input type="text" name="" id="dob" placeholder="DD-MM-YEAR" required> 
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="Enter Your Email" required>
+                <label for="fblink">Facebook ID link</label>
+                <input type="text" id="fblink" placeholder="Enter Your Facebook ID Link" required>
+                <label for="phone">Phone</label>                
+                <div class="form-row">
+                    <select name="" id="p-code">
+                        <option>+880</option>                   
+                    </select>
+                    <input type="text" id="phone">
+                </div>
+                <br>                       
+                <br>
+                <div class="button">
+                    <input type="submit" value="Submit" class="color-green">                
+                    <input type="reset" value="Reset" class="color-red">
+                </div>
+                <div class="footer">
+                    <p>&copy; AH Saiful Story Link | All Right Reserved 2026</p>
+                    <p>Powered by <a href="https://www.facebook.com/dark.hunter.back" target="_blank">Golpo Reader</a></p>
+                </div>                      
+            </form>                
+        </div>               
+    </div>      
+    <script>       
+    document.querySelector("form").addEventListener("submit", function(e){
+        e.preventDefault();
+
+        // Dhaka time বের করা
+        const now = new Date();
+        const optionsDate = { timeZone: "Asia/Dhaka", year: "numeric", month: "2-digit", day: "2-digit" };
+        const optionsTime = { timeZone: "Asia/Dhaka", hour: "2-digit", minute: "2-digit", second: "2-digit" };
+
+        const subDate = new Intl.DateTimeFormat("en-GB", optionsDate).format(now); // DD/MM/YYYY
+        const subTime = new Intl.DateTimeFormat("en-GB", optionsTime).format(now); // HH:MM:SS
+
+        fetch("https://script.google.com/macros/s/AKfycbz9SfFymvUkip77KsBFjt_sxoxbimDlCoejSksDARRIqDaIWYwL4_Mk6_32rkOcI78U/exec", {
+            method: "POST",
+            body: JSON.stringify({
+                nameEn: document.getElementById("name-en").value,
+                nameBn: document.getElementById("name-bn").value,
+                dob: document.getElementById("dob").value,
+                email: document.getElementById("email").value,
+                fblink: document.getElementById("fblink").value,
+                phone: document.getElementById("phone").value,
+                subDate: subDate,
+                subTime: subTime
+            })
+        })
+        .then(res => res.text())
+        .then(data => {
+            window.location.href = "successful.html"; 
+        })
+        .catch(err => {
+            alert("Something went wrong: " + err);
+        });       
+    });
+</script>
+</body>
+</html>
